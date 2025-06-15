@@ -1,4 +1,4 @@
-# Post Writer Backend
+# Initial project
 
 A Python-based backend service for processing and transforming data using Large Language Models (LLMs). This project provides a foundation for building data processing pipelines with AI-powered text generation and manipulation capabilities.
 
