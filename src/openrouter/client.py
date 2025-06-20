@@ -34,7 +34,12 @@ class OpenRouter:
             model_config (ModelConfig): Configuration for the model to use (default: GEMINI_FLASH)
             
         Returns:
-            str: The model's response
+            tuple[str, dict]: A tuple containing:
+                - str: The model's response
+                - dict: Token usage information with keys:
+                    - prompt_tokens: Number of tokens in the prompt
+                    - completion_tokens: Number of tokens in the completion
+                    - total_tokens: Total number of tokens used
         """        
         logger.info(f"Requesting completion from model: {model_config.name}")
         logger.debug(f"Prompt: {prompt}")
@@ -53,7 +58,13 @@ class OpenRouter:
                 temperature=model_config.temperature
             )
             response = completion.choices[0].message.content
+            usage = {
+                "prompt_tokens": completion.usage.prompt_tokens,
+                "completion_tokens": completion.usage.completion_tokens,
+                "total_tokens": completion.usage.total_tokens
+            }
             logger.debug(f"Received response: {response}")
+            logger.debug(f"Token usage: {usage}")
             return response
         except Exception as e:
             logger.error(f"Error getting completion: {str(e)}", exc_info=True)
