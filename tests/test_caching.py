@@ -3,11 +3,8 @@ import json
 import tempfile
 import shutil
 from pathlib import Path
-from unittest.mock import patch, mock_open
 from caching.caching import (
     CacheManager, 
-    cache_result, 
-    cache_result_dict, 
     cache_result_with_dir, 
     cache_result_with_dir_dict,
     clear_cache,
@@ -34,7 +31,7 @@ class TestCacheManager:
     def test_init_creates_cache_dir(self, temp_cache_dir):
         """Тест создания директории кэша при инициализации."""
         cache_dir = Path(temp_cache_dir) / "new_cache"
-        cache_manager = CacheManager(str(cache_dir))
+        CacheManager(str(cache_dir))
         assert cache_dir.exists()
         assert cache_dir.is_dir()
     
@@ -84,15 +81,15 @@ class TestCacheManager:
     
     def test_is_json_serializable(self, cache_manager):
         """Тест проверки JSON сериализуемости."""
-        assert cache_manager._is_json_serializable({"key": "value"}) == True
-        assert cache_manager._is_json_serializable([1, 2, 3]) == True
-        assert cache_manager._is_json_serializable("string") == True
-        assert cache_manager._is_json_serializable(42) == True
-        assert cache_manager._is_json_serializable(None) == True
+        assert cache_manager._is_json_serializable({"key": "value"})
+        assert cache_manager._is_json_serializable([1, 2, 3])
+        assert cache_manager._is_json_serializable("string")
+        assert cache_manager._is_json_serializable(42)
+        assert cache_manager._is_json_serializable(None)
         
         # Не сериализуемые объекты
-        assert cache_manager._is_json_serializable(lambda x: x) == False
-        assert cache_manager._is_json_serializable(object()) == False
+        assert not cache_manager._is_json_serializable(lambda x: x)
+        assert not cache_manager._is_json_serializable(object())
     
     def test_serialize_deserialize_json_value(self, cache_manager):
         """Тест сериализации и десериализации JSON значений."""
@@ -107,7 +104,8 @@ class TestCacheManager:
     
     def test_serialize_deserialize_pickle_value(self, cache_manager):
         """Тест сериализации и десериализации pickle значений."""
-        test_value = lambda x: x * 2
+        def test_value(x):
+            return x * 2
         
         serialized = cache_manager._serialize_value(test_value)
         # Лямбда-функции не сериализуются через pickle, ожидаем type == 'string'
@@ -188,17 +186,17 @@ class TestCacheDecorators:
         
         # Первый вызов - результат вычисляется
         result1, is_from_cache1 = test_function(1, 2, param="test")
-        assert is_from_cache1 == False
+        assert not is_from_cache1
         assert result1 == {"sum": 3, "param": "test"}
         
         # Второй вызов с теми же параметрами - результат из кэша
         result2, is_from_cache2 = test_function(1, 2, param="test")
-        assert is_from_cache2 == True
+        assert is_from_cache2
         assert result2 == {"sum": 3, "param": "test"}
         
         # Вызов с другими параметрами - результат вычисляется
         result3, is_from_cache3 = test_function(3, 4, param="other")
-        assert is_from_cache3 == False
+        assert not is_from_cache3
         assert result3 == {"sum": 7, "param": "other"}
     
     def test_cache_result_dict_decorator(self, temp_cache_dir):
@@ -209,12 +207,12 @@ class TestCacheDecorators:
         
         # Первый вызов
         result1 = test_function(2, 3)
-        assert result1["isFromCache"] == False
+        assert not result1["isFromCache"]
         assert result1["result"] == 6
         
         # Второй вызов с теми же параметрами
         result2 = test_function(2, 3)
-        assert result2["isFromCache"] == True
+        assert result2["isFromCache"]
         assert result2["result"] == 6
     
     def test_cache_result_with_complex_objects(self, temp_cache_dir):
@@ -232,14 +230,14 @@ class TestCacheDecorators:
         
         # Первый вызов
         result1, is_from_cache1 = test_function(test_list, test_dict)
-        assert is_from_cache1 == False
+        assert not is_from_cache1
         assert result1["list"] == test_list
         assert result1["dict"] == test_dict
         assert callable(result1["lambda"])
         
         # Второй вызов
         result2, is_from_cache2 = test_function(test_list, test_dict)
-        assert is_from_cache2 == True
+        assert is_from_cache2
         # Если результат строка, значит объект не сериализовался (например, из-за лямбда)
         if isinstance(result2, str):
             assert "lambda" in result2 or "<function" in result2
@@ -262,12 +260,12 @@ class TestCacheDecorators:
         
         # Первый вызов
         result1, is_from_cache1 = obj.method(5)
-        assert is_from_cache1 == False
+        assert not is_from_cache1
         assert result1 == 15
         
         # Второй вызов
         result2, is_from_cache2 = obj.method(5)
-        assert is_from_cache2 == True
+        assert is_from_cache2
         assert result2 == 15
 
 
