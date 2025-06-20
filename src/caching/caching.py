@@ -107,8 +107,12 @@ class CacheManager:
         if data["type"] == "json":
             return data["value"]
         elif data["type"] == "pickle":
-            pickled_bytes = bytes.fromhex(data["value"])
-            return pickle.loads(pickled_bytes)
+            try:
+                pickled_bytes = bytes.fromhex(data["value"])
+                return pickle.loads(pickled_bytes)
+            except (ValueError, pickle.UnpicklingError) as e:
+                # Если не удалось десериализовать pickle, выбрасываем ValueError
+                raise ValueError(f"Ошибка десериализации pickle: {e}")
         elif data["type"] == "string":
             return data["value"]
         else:
