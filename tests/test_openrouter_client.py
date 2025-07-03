@@ -1,8 +1,8 @@
 import os
 import pytest
 from dotenv import load_dotenv
-from openrouter.client import OpenRouter
-from openrouter.models import MODELS
+from llms.openrouter.openrouter_client import OpenRouter
+from llms.openrouter.models import MODELS
 
 # Load environment variables from .env file
 load_dotenv()
@@ -20,16 +20,18 @@ def test_get_completion(openrouter_client):
     prompt = "Say hello in one word"
     response = openrouter_client.get_completion(prompt)
     
-    assert isinstance(response, str)
-    assert len(response) > 0
+    assert isinstance(response.content, str)
+    assert len(response.content) > 0
 
 def test_get_completion_with_custom_model(openrouter_client):
     """Test that get_completion works with a custom model."""
     prompt = "What is 2+2?"
+    # Use a valid OpenRouter model name
+    custom_model = MODELS.GEMINI_FLASH
     response = openrouter_client.get_completion(
         prompt=prompt,
-        model_config=MODELS.GPT_3_5_TURBO
+        model_config=custom_model
     )
     
-    assert isinstance(response, str)
-    assert len(response) > 0 
+    assert isinstance(response.content, str)
+    assert len(response.content) > 0 

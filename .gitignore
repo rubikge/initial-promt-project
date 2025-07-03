@@ -14,3 +14,6 @@ wheels/
 **/*.log
 
 .pytest_cache/
+
+input/
+output/
