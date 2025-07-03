@@ -14,10 +14,12 @@ from llms.replicate.models import MODELS
 load_dotenv()
 
 # Configuration constants
-TEST_PROMPT = """1. Remove braids, leave hair natural, unstyled."""
-TEST_MODEL = MODELS.FLUX_KONTEXT_PRO
-CONTEXT_IMAGE_FILENAME = "NORS556.jpg"
-OUTPUT_FILENAME = "flux_kontext_pro.jpg"
+TEST_PROMPT = """1. Remove the pattern from the sleeves.
+2. Remove the white banner above the shoulder."""
+TEST_MODEL = MODELS.FLUX_KONTEXT_MAX
+CONTEXT_IMAGE_FILENAME = "NORS186.jpg"
+OUTPUT_FILENAME = "flux_kontext_max.jpg"
+
 
 def upload_image_to_temp_url(image_path: Path) -> str:
     """Upload image to a temporary URL service and return the URL."""
@@ -85,7 +87,7 @@ def test_kontext_image_generation():
     output_dir = Path("output") / current_date
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    print("=== Testing Replicate Kontext Pro Image Generation ===")
+    print("=== Testing Replicate Kontext Max Image Generation ===")
     print(f"Prompt: {TEST_PROMPT}")
     print(f"Model: {TEST_MODEL.name}")
     print(f"Context image: {context_image_path}")

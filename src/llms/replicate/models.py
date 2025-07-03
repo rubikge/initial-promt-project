@@ -65,6 +65,19 @@ class FluxKontextMaxConfig(ModelConfig):
     safety_tolerance: Optional[int] = Field(default=2, description="Safety tolerance, 0 is most strict and 6 is most permissive. 2 is currently the maximum allowed when input images are used.")
     prompt_upsampling: Optional[bool] = Field(default=None, description="Automatic prompt improvement")
 
+class FluxKontextProConfig(ModelConfig):
+    """Configuration for Flux Kontext Pro model with default parameters"""
+    
+    name: str = Field(default="black-forest-labs/flux-kontext-pro", description="Model name/identifier")
+    seed: Optional[int] = Field(default=None, description="Random seed. Set for reproducible generation")
+    prompt: Optional[str] = Field(default=None, description="Text description of what you want to generate, or the instruction on how to edit the given image.")
+    input_image: Optional[str] = Field(default=None, description="Image to use as reference. Must be jpeg, png, gif, or webp.")
+    aspect_ratio: Optional[str] = Field(default="match_input_image", description="Aspect ratio of the generated image. Use 'match_input_image' to match the aspect ratio of the input image.")
+    output_format: Optional[str] = Field(default="jpg", description="Output format for the generated image")
+    safety_tolerance: Optional[int] = Field(default=2, description="Safety tolerance, 0 is most strict and 6 is most permissive. 2 is currently the maximum allowed when input images are used.")
+    prompt_upsampling: Optional[bool] = Field(default=None, description="Automatic prompt improvement")
+
+
 
 class Models:
     """Class for accessing Replicate model configurations"""
@@ -72,6 +85,7 @@ class Models:
     # Image generation models with specific configurations
     FLUX_1_1_PRO_ULTRA = FluxProUltraConfig()
     FLUX_KONTEXT_MAX = FluxKontextMaxConfig()
+    FLUX_KONTEXT_PRO = FluxKontextProConfig()
     
     @staticmethod
     def create_custom_config(
